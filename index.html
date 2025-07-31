@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>House Price Predictor</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 400px;
+    }
+
+    .container h1 {
+      font-size: 26px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .container input[type="number"] {
+      padding: 10px;
+      width: 100%;
+      margin-bottom: 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    .container button {
+      padding: 10px 20px;
+      font-size: 16px;
+      color: white;
+      background-color: #007bff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .container button:hover {
+      background-color: #0056b3;
+    }
+
+    #output {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>
+      <img src="https://img.icons8.com/color/48/000000/home--v2.png" width="36" />
+      House Price Prediction
+    </h1>
+    <input type="number" id="area" placeholder="Enter Area (sq ft)" />
+    <button onclick="getPrediction()">Submit</button>
+    <div id="output"></div>
+  </div>
+
+  <script>
+    function getPrediction() {
+      const areaValue = document.getElementById("area").value;
+
+      fetch("http://127.0.0.1:5000/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ area: parseFloat(areaValue) })   
+      })
+      .then(response => response.json())
+      .then(data => {
+        const outputDiv = document.getElementById("output");
+        if (data.prediction) {
+          outputDiv.innerHTML = `Predicted Price: ₹ ${data.prediction.toFixed(2)}`;
+        } else {
+          outputDiv.innerHTML = `<span style="color:red;">Error: ${data.error}</span>`;
+        }
+      })
+      .catch(err => {
+        document.getElementById("output").innerHTML = "⚠️ Request failed: " + err;
+      });
+    }
+  </script>
+
+</body>
+</html>
